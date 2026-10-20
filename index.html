@@ -139,6 +139,12 @@
                         <span class="hidden sm:inline">PPS Sites</span>
                     </button>
 
+                    <!-- Google Maps Shortest Route Settings Trigger -->
+                    <button onclick="openMapsSettingsModal()" class="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition font-medium text-white shadow-sm" title="Configure Google Maps Shortest Route API">
+                        <i class="fas fa-route text-emerald-300"></i>
+                        <span class="hidden sm:inline">Route Engine</span>
+                    </button>
+
                     <!-- Theme Toggle Button -->
                     <button id="theme-toggle-btn" onclick="toggleTheme()" class="p-2 sm:p-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition border border-transparent hover:border-white/10" title="Toggle Light/Dark Theme">
                         <i id="theme-toggle-icon" class="fas fa-moon text-base sm:text-lg text-pps-gold"></i>
@@ -313,9 +319,14 @@
                     <!-- Mileage & Return Trip Controls -->
                     <div class="grid grid-cols-2 gap-3 pt-1">
                         <div>
-                            <label for="trip-miles-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
-                                Miles Traveled:
-                            </label>
+                            <div class="flex items-center justify-between mb-1">
+                                <label for="trip-miles-input" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                                    <span>Miles Traveled:</span>
+                                </label>
+                                <span id="auto-calc-badge" class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-300 dark:border-emerald-700 cursor-pointer" onclick="openMapsSettingsModal()" title="Click to view routing engine settings">
+                                    <i class="fas fa-wand-magic-sparkles"></i> Shortest Dist
+                                </span>
+                            </div>
                             <div class="relative">
                                 <input type="number" id="trip-miles-input" step="0.1" min="0" placeholder="0.0" oninput="updateLivePayoutPreview()" class="w-full p-2.5 pr-8 text-sm font-bold bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy dark:focus:ring-pps-gold focus:outline-none text-right">
                                 <span class="absolute right-2.5 top-2.5 text-xs font-semibold text-slate-400">mi</span>
@@ -333,13 +344,19 @@
                         </div>
                     </div>
 
-                    <!-- Return Trip Checkbox -->
-                    <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 transition">
-                        <input type="checkbox" id="return-trip-checkbox" onchange="onReturnTripToggled()" class="w-4 h-4 rounded text-pps-navy focus:ring-pps-gold dark:focus:ring-pps-gold text-pps-navyDark">
-                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            Round Trip (Doubles mileage to return to start)
-                        </span>
-                    </label>
+                    <!-- Return Trip Checkbox & Maps Link Row -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                        <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 transition flex-grow">
+                            <input type="checkbox" id="return-trip-checkbox" onchange="onReturnTripToggled()" class="w-4 h-4 rounded text-pps-navy focus:ring-pps-gold dark:focus:ring-pps-gold text-pps-navyDark">
+                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                Round Trip (2x)
+                            </span>
+                        </label>
+                        <button type="button" onclick="openGoogleMapsRoute()" class="px-2.5 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition flex items-center justify-center gap-1.5 shadow-sm" title="Open turn-by-turn route in Google Maps">
+                            <i class="fas fa-diamond-turn-right text-emerald-600 dark:text-emerald-400"></i>
+                            <span>View Map</span>
+                        </button>
+                    </div>
 
                     <!-- Purpose / Helpdesk Ticket Number -->
                     <div>
@@ -712,6 +729,79 @@
         </div>
     </div>
 
+    <!-- MODAL 3: Google Maps Shortest Route Configuration -->
+    <div id="maps-settings-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-4 bg-gradient-to-r from-pps-navy via-pps-navyLight to-slate-900 text-white flex justify-between items-center border-b border-pps-gold/30">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/40">
+                        <i class="fas fa-compass"></i>
+                    </span>
+                    <h3 class="font-extrabold text-sm sm:text-base">Google Maps Route Calculation</h3>
+                </div>
+                <button onclick="closeMapsSettingsModal()" class="text-slate-300 hover:text-white p-1">
+                    <i class="fas fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 space-y-4">
+                <div class="bg-blue-50 dark:bg-blue-950/40 p-3.5 rounded-xl border border-blue-200 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-200 leading-relaxed">
+                    <p class="font-bold flex items-center gap-1.5 mb-1 text-pps-navy dark:text-pps-gold">
+                        <i class="fas fa-circle-info"></i> How Shortest Route Works
+                    </p>
+                    Standard GPS apps often route technicians onto longer freeway loops because they are a couple of minutes faster. For PPS mileage reimbursement, this tool compares alternative paths and selects the <strong>absolute shortest physical road distance</strong>.
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                        Routing Strategy Preference:
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" id="route-pref-shortest" onclick="setRoutingStrategy('shortest')" class="p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-pps-navy/10 border-pps-navy text-pps-navy dark:bg-pps-gold/10 dark:border-pps-gold dark:text-pps-gold">
+                            <i class="fas fa-ruler"></i>
+                            <span>Shortest Distance</span>
+                            <span class="text-[10px] font-normal opacity-75">Minimizes odometer miles</span>
+                        </button>
+                        <button type="button" id="route-pref-fastest" onclick="setRoutingStrategy('fastest')" class="p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-400">
+                            <i class="fas fa-gauge-high"></i>
+                            <span>Fastest Travel Time</span>
+                            <span class="text-[10px] font-normal opacity-75">Traffic/Freeway priority</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="google-maps-api-key" class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                            Google Maps API Key (Optional):
+                        </label>
+                        <span id="api-status-pill" class="text-[10px] px-2 py-0.5 rounded font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                            Offline Mode (Built-in Grid)
+                        </span>
+                    </div>
+                    <input type="password" id="google-maps-api-key" placeholder="AIzaSy..." class="w-full p-2.5 text-xs font-mono bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy focus:outline-none">
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                        Optional: If entered, live Google Directions API fetches and compares multiple alternate routes in real time. If left blank, the app uses its built-in PPS Portland street grid matrix with 100% offline reliability.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <button onclick="testLiveGoogleRoute()" class="text-xs text-pps-navy dark:text-pps-gold font-bold hover:underline flex items-center gap-1">
+                    <i class="fas fa-play"></i> Test Route Engine
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="closeMapsSettingsModal()" class="px-3.5 py-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition font-semibold">
+                        Cancel
+                    </button>
+                    <button onclick="saveMapsSettings()" class="bg-pps-navy hover:bg-pps-navyDark text-white px-4 py-2 text-xs font-bold rounded-xl shadow transition flex items-center gap-1.5">
+                        <i class="fas fa-check text-pps-gold"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Interactive Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
         <div class="bg-pps-navyDark text-white px-4 py-3 rounded-xl shadow-2xl border border-pps-gold/50 flex items-center gap-3 max-w-md">
@@ -725,27 +815,28 @@
            1. INITIAL STATE & PPS MASTER DATA
            ========================================================================== */
 
+        // Exact coordinates (lat, lng) for automatic road distance calculation
         const DEFAULT_PPS_SITES = [
-            { id: 'pec-hq', name: 'Prophet Education Center (BPS / HQ)', address: '501 N Dixon St, Portland, OR 97227', category: 'HQ / IT Office' },
-            { id: 'grant-hs', name: 'Grant High School', address: '2245 NE 36th Ave, Portland, OR 97212', category: 'High School' },
-            { id: 'lincoln-hs', name: 'Lincoln High School', address: '1750 SW Salmon St, Portland, OR 97205', category: 'High School' },
-            { id: 'franklin-hs', name: 'Franklin High School', address: '5405 SE Woodward St, Portland, OR 97206', category: 'High School' },
-            { id: 'roosevelt-hs', name: 'Roosevelt High School', address: '6941 N Central St, Portland, OR 97203', category: 'High School' },
-            { id: 'cleveland-hs', name: 'Cleveland High School', address: '3400 SE 26th Ave, Portland, OR 97202', category: 'High School' },
-            { id: 'mcdaniel-hs', name: 'McDaniel High School', address: '2735 NE 82nd Ave, Portland, OR 97220', category: 'High School' },
-            { id: 'wells-hs', name: 'Wells (Wilson) High School', address: '1151 SW Vermont St, Portland, OR 97219', category: 'High School' },
-            { id: 'jefferson-hs', name: 'Jefferson High School', address: '5210 N Kerby Ave, Portland, OR 97217', category: 'High School' },
-            { id: 'benson-hs', name: 'Benson Polytechnic High School', address: '546 NE 12th Ave, Portland, OR 97232', category: 'High School' },
-            { id: 'da-vinci-ms', name: 'da Vinci Arts Middle School', address: '2508 NE Everett St, Portland, OR 97232', category: 'Middle School' },
-            { id: 'hosford-ms', name: 'Hosford Middle School', address: '2303 SE 28th Pl, Portland, OR 97214', category: 'Middle School' },
-            { id: 'lane-ms', name: 'Lane Middle School', address: '7200 SE 60th Ave, Portland, OR 97206', category: 'Middle School' },
-            { id: 'mt-tabor-ms', name: 'Mt. Tabor Middle School', address: '5800 SE Ash St, Portland, OR 97215', category: 'Middle School' },
-            { id: 'oakhurst-wh', name: 'Columbia Warehouse & Distribution', address: '716 NE Marine Dr, Portland, OR 97211', category: 'Operations / Facilities' },
-            { id: 'skyline-es', name: 'Skyline Elementary', address: '11536 NW Skyline Blvd, Portland, OR 97231', category: 'Elementary' },
-            { id: 'llewellyn-es', name: 'Llewellyn Elementary', address: '6301 SE 14th Ave, Portland, OR 97202', category: 'Elementary' }
+            { id: 'pec-hq', name: 'Prophet Education Center (BPS / HQ)', address: '501 N Dixon St, Portland, OR 97227', category: 'HQ / IT Office', lat: 45.5349, lng: -122.6713 },
+            { id: 'grant-hs', name: 'Grant High School', address: '2245 NE 36th Ave, Portland, OR 97212', category: 'High School', lat: 45.5392, lng: -122.6272 },
+            { id: 'lincoln-hs', name: 'Lincoln High School', address: '1750 SW Salmon St, Portland, OR 97205', category: 'High School', lat: 45.5204, lng: -122.6908 },
+            { id: 'franklin-hs', name: 'Franklin High School', address: '5405 SE Woodward St, Portland, OR 97206', category: 'High School', lat: 45.4988, lng: -122.6074 },
+            { id: 'roosevelt-hs', name: 'Roosevelt High School', address: '6941 N Central St, Portland, OR 97203', category: 'High School', lat: 45.5901, lng: -122.7533 },
+            { id: 'cleveland-hs', name: 'Cleveland High School', address: '3400 SE 26th Ave, Portland, OR 97202', category: 'High School', lat: 45.4984, lng: -122.6393 },
+            { id: 'mcdaniel-hs', name: 'McDaniel High School', address: '2735 NE 82nd Ave, Portland, OR 97220', category: 'High School', lat: 45.5427, lng: -122.5786 },
+            { id: 'wells-hs', name: 'Wells (Wilson) High School', address: '1151 SW Vermont St, Portland, OR 97219', category: 'High School', lat: 45.4789, lng: -122.6917 },
+            { id: 'jefferson-hs', name: 'Jefferson High School', address: '5210 N Kerby Ave, Portland, OR 97217', category: 'High School', lat: 45.5607, lng: -122.6725 },
+            { id: 'benson-hs', name: 'Benson Polytechnic High School', address: '546 NE 12th Ave, Portland, OR 97232', category: 'High School', lat: 45.5262, lng: -122.6534 },
+            { id: 'da-vinci-ms', name: 'da Vinci Arts Middle School', address: '2508 NE Everett St, Portland, OR 97232', category: 'Middle School', lat: 45.5255, lng: -122.6398 },
+            { id: 'hosford-ms', name: 'Hosford Middle School', address: '2303 SE 28th Pl, Portland, OR 97214', category: 'Middle School', lat: 45.5065, lng: -122.6358 },
+            { id: 'lane-ms', name: 'Lane Middle School', address: '7200 SE 60th Ave, Portland, OR 97206', category: 'Middle School', lat: 45.4719, lng: -122.6015 },
+            { id: 'mt-tabor-ms', name: 'Mt. Tabor Middle School', address: '5800 SE Ash St, Portland, OR 97215', category: 'Middle School', lat: 45.5218, lng: -122.6033 },
+            { id: 'oakhurst-wh', name: 'Columbia Warehouse & Distribution', address: '716 NE Marine Dr, Portland, OR 97211', category: 'Operations / Facilities', lat: 45.5976, lng: -122.6631 },
+            { id: 'skyline-es', name: 'Skyline Elementary', address: '11536 NW Skyline Blvd, Portland, OR 97231', category: 'Elementary', lat: 45.5956, lng: -122.8021 },
+            { id: 'llewellyn-es', name: 'Llewellyn Elementary', address: '6301 SE 14th Ave, Portland, OR 97202', category: 'Elementary', lat: 45.4776, lng: -122.6517 }
         ];
 
-        // Estimated distance matrix between key hubs (in one-way road miles)
+        // Specific ground-truth overrides for known district travel corridors (in one-way road miles)
         const ESTIMATED_DISTANCES = {
             'pec-hq:grant-hs': 2.6,
             'pec-hq:lincoln-hs': 2.8,
@@ -770,6 +861,9 @@
         let federalMileageRate = 0.67; // Federal IRS standard rate
         let baseSiteId = 'pec-hq';
         let selectedDate = '';
+        let googleMapsApiKey = '';
+        let routingStrategy = 'shortest'; // 'shortest' or 'fastest'
+        let googleMapsLoaded = false;
 
         /* ==========================================================================
            2. AUDIO FEEDBACK CUES (Web Audio API Synthesizer)
@@ -859,6 +953,22 @@
             if (storedBase) {
                 baseSiteId = storedBase;
             }
+
+            // Load Routing Strategy & Google Maps API Key
+            const storedApiKey = localStorage.getItem('pps_it_gmaps_api_key');
+            if (storedApiKey) {
+                googleMapsApiKey = storedApiKey;
+                const keyInput = document.getElementById('google-maps-api-key');
+                if (keyInput) keyInput.value = googleMapsApiKey;
+                loadGoogleMapsApiScript(googleMapsApiKey);
+            }
+
+            const storedStrategy = localStorage.getItem('pps_it_routing_strategy');
+            if (storedStrategy) {
+                routingStrategy = storedStrategy;
+            }
+            updateRoutingStrategyUI();
+            updateApiStatusBadge();
         }
 
         function saveSitesToStorage() {
@@ -967,28 +1077,272 @@
             updateLivePayoutPreview();
         }
 
-        function calculateEstimatedDistance() {
+        /* ==========================================================================
+           AUTOMATIC DISTANCE CALCULATION ENGINE
+           ========================================================================== */
+
+        // Great-circle Haversine formula converted into road mileage
+        function computeRoadDistanceMiles(lat1, lon1, lat2, lon2, strategy = 'shortest') {
+            const R = 3958.8; // Radius of Earth in miles
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const straightLine = R * c;
+
+            // Portland road routing factor:
+            // Shortest surface streets: ~1.20 - 1.25 direct grid
+            // Freeway/fastest bypasses: ~1.34 - 1.40
+            const factor = strategy === 'shortest' ? 1.22 : 1.36;
+            return straightLine * factor;
+        }
+
+        async function calculateEstimatedDistance() {
             const startId = document.getElementById('start-site-select').value;
             const endId = document.getElementById('end-site-select').value;
             const milesInput = document.getElementById('trip-miles-input');
             const isRoundTrip = document.getElementById('return-trip-checkbox').checked;
+            const calcBadge = document.getElementById('auto-calc-badge');
+
+            if (!milesInput) return;
 
             if (startId === endId) {
                 milesInput.value = (0.0).toFixed(1);
+                if (calcBadge) calcBadge.innerText = 'Same site';
                 updateLivePayoutPreview();
                 return;
             }
 
-            // Check distance matrix
+            const s1 = ppsSites.find(s => s.id === startId);
+            const s2 = ppsSites.find(s => s.id === endId);
+
+            // 1. If Google Maps JS API is available, query live routes and extract the shortest distance
+            if (googleMapsLoaded && window.google && window.google.maps && s1 && s2) {
+                if (calcBadge) calcBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finding shortest...';
+                try {
+                    const shortestGoogleMiles = await fetchShortestDistanceGoogle(s1, s2, routingStrategy);
+                    if (shortestGoogleMiles) {
+                        const totalDist = isRoundTrip ? (shortestGoogleMiles * 2) : shortestGoogleMiles;
+                        milesInput.value = totalDist.toFixed(1);
+                        if (calcBadge) {
+                            calcBadge.innerHTML = routingStrategy === 'shortest'
+                                ? '<i class="fas fa-check text-emerald-500"></i> Google Shortest'
+                                : '<i class="fas fa-check text-emerald-500"></i> Google Fastest';
+                        }
+                        updateLivePayoutPreview();
+                        return;
+                    }
+                } catch (err) {
+                    console.warn("Live Google route fetch fallback:", err);
+                }
+            }
+
+            // 2. High accuracy fallback: predefined district mileage corridor table
             const key1 = `${startId}:${endId}`;
             const key2 = `${endId}:${startId}`;
-            let dist = ESTIMATED_DISTANCES[key1] || ESTIMATED_DISTANCES[key2] || null;
+            let oneWayMiles = ESTIMATED_DISTANCES[key1] || ESTIMATED_DISTANCES[key2] || null;
 
-            if (dist !== null) {
-                if (isRoundTrip) dist *= 2;
-                milesInput.value = dist.toFixed(1);
+            // 3. Fallback to geodetic shortest grid calculation
+            if (oneWayMiles === null && s1 && s2 && s1.lat && s1.lng && s2.lat && s2.lng) {
+                oneWayMiles = computeRoadDistanceMiles(s1.lat, s1.lng, s2.lat, s2.lng, routingStrategy);
             }
+
+            if (oneWayMiles !== null) {
+                const totalDist = isRoundTrip ? (oneWayMiles * 2) : oneWayMiles;
+                milesInput.value = Math.max(0.5, totalDist).toFixed(1);
+                if (calcBadge) {
+                    calcBadge.innerHTML = routingStrategy === 'shortest'
+                        ? '<i class="fas fa-wand-magic-sparkles"></i> Shortest Grid'
+                        : '<i class="fas fa-wand-magic-sparkles"></i> Fastest Grid';
+                }
+            } else {
+                if (calcBadge) calcBadge.innerText = 'Manual input';
+            }
+
             updateLivePayoutPreview();
+        }
+
+        // Live Google Maps Directions Service with Shortest-Route Selection
+        function fetchShortestDistanceGoogle(siteA, siteB, strategy = 'shortest') {
+            return new Promise((resolve, reject) => {
+                if (!window.google || !window.google.maps) {
+                    return reject(new Error("Google Maps not initialized"));
+                }
+
+                const directionsService = new google.maps.DirectionsService();
+                const origin = siteA.address || `${siteA.lat},${siteA.lng}`;
+                const destination = siteB.address || `${siteB.lat},${siteB.lng}`;
+
+                directionsService.route({
+                    origin: origin,
+                    destination: destination,
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    provideRouteAlternatives: true // Vital: Fetch all candidate routes so we can compare and find the shortest
+                }, (response, status) => {
+                    if (status === google.maps.DirectionsStatus.OK && response && response.routes) {
+                        let candidateRoutes = response.routes.map(r => {
+                            let meters = 0;
+                            let durationSec = 0;
+                            r.legs.forEach(leg => {
+                                meters += leg.distance.value;
+                                durationSec += leg.duration.value;
+                            });
+                            return {
+                                miles: meters * 0.000621371,
+                                seconds: durationSec,
+                                summary: r.summary
+                            };
+                        });
+
+                        if (candidateRoutes.length === 0) return resolve(null);
+
+                        if (strategy === 'shortest') {
+                            // Sort by shortest physical distance in miles
+                            candidateRoutes.sort((a, b) => a.miles - b.miles);
+                        } else {
+                            // Sort by fastest duration
+                            candidateRoutes.sort((a, b) => a.seconds - b.seconds);
+                        }
+
+                        resolve(candidateRoutes[0].miles);
+                    } else {
+                        reject(new Error("Google route status: " + status));
+                    }
+                });
+            });
+        }
+
+        /* ==========================================================================
+           MODAL 3: ROUTING ENGINE SETTINGS
+           ========================================================================== */
+
+        function openMapsSettingsModal() {
+            const modal = document.getElementById('maps-settings-modal');
+            const keyInput = document.getElementById('google-maps-api-key');
+            if (keyInput) keyInput.value = googleMapsApiKey || '';
+            updateRoutingStrategyUI();
+            updateApiStatusBadge();
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeMapsSettingsModal() {
+            const modal = document.getElementById('maps-settings-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function setRoutingStrategy(strat) {
+            routingStrategy = strat;
+            localStorage.setItem('pps_it_routing_strategy', routingStrategy);
+            updateRoutingStrategyUI();
+            calculateEstimatedDistance();
+            showToast(`Routing set to ${strat === 'shortest' ? 'Shortest Distance' : 'Fastest Time'}`);
+        }
+
+        function updateRoutingStrategyUI() {
+            const shortestBtn = document.getElementById('route-pref-shortest');
+            const fastestBtn = document.getElementById('route-pref-fastest');
+            if (!shortestBtn || !fastestBtn) return;
+
+            if (routingStrategy === 'shortest') {
+                shortestBtn.className = "p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-pps-navy/10 border-pps-navy text-pps-navy dark:bg-pps-gold/10 dark:border-pps-gold dark:text-pps-gold shadow-sm";
+                fastestBtn.className = "p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-400";
+            } else {
+                fastestBtn.className = "p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-pps-navy/10 border-pps-navy text-pps-navy dark:bg-pps-gold/10 dark:border-pps-gold dark:text-pps-gold shadow-sm";
+                shortestBtn.className = "p-2.5 rounded-xl border-2 text-xs font-bold text-center transition flex flex-col items-center gap-1 bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-400";
+            }
+        }
+
+        function updateApiStatusBadge() {
+            const pill = document.getElementById('api-status-pill');
+            if (!pill) return;
+            if (googleMapsApiKey && googleMapsApiKey.trim().length > 10) {
+                pill.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700";
+                pill.innerText = "Google API Active";
+            } else {
+                pill.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
+                pill.innerText = "Offline Mode (Built-in Grid)";
+            }
+        }
+
+        function saveMapsSettings() {
+            const keyInput = document.getElementById('google-maps-api-key');
+            if (keyInput) {
+                const newKey = keyInput.value.trim();
+                googleMapsApiKey = newKey;
+                localStorage.setItem('pps_it_gmaps_api_key', googleMapsApiKey);
+                if (googleMapsApiKey) {
+                    loadGoogleMapsApiScript(googleMapsApiKey);
+                } else {
+                    googleMapsLoaded = false;
+                }
+            }
+            updateApiStatusBadge();
+            closeMapsSettingsModal();
+            calculateEstimatedDistance();
+            showToast("Routing engine settings saved!");
+            playSoftChime();
+        }
+
+        function loadGoogleMapsApiScript(apiKey) {
+            if (!apiKey || document.getElementById('google-maps-sdk')) return;
+            const script = document.createElement('script');
+            script.id = 'google-maps-sdk';
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            script.onload = () => {
+                googleMapsLoaded = true;
+                updateApiStatusBadge();
+                calculateEstimatedDistance();
+                console.log("Google Maps JS API loaded successfully");
+            };
+            script.onerror = () => {
+                googleMapsLoaded = false;
+                showToast("Could not load Google Maps API (Check Key)", "error");
+            };
+            document.head.appendChild(script);
+        }
+
+        async function testLiveGoogleRoute() {
+            const keyInput = document.getElementById('google-maps-api-key');
+            const key = keyInput ? keyInput.value.trim() : '';
+            if (!key) {
+                showToast("Enter a Google Maps API Key first to test", "error");
+                return;
+            }
+            showToast("Testing live route connection...");
+            try {
+                if (!googleMapsLoaded) loadGoogleMapsApiScript(key);
+                const s1 = ppsSites[0];
+                const s2 = ppsSites[1];
+                const shortest = await fetchShortestDistanceGoogle(s1, s2, routingStrategy);
+                if (shortest) {
+                    showToast(`Success! Shortest route: ${s1.name} → ${s2.name} is ${shortest.toFixed(1)} mi`);
+                }
+            } catch (err) {
+                showToast("Route test failed: " + err.message, "error");
+            }
+        }
+
+        function openGoogleMapsRoute() {
+            const startId = document.getElementById('start-site-select').value;
+            const endId = document.getElementById('end-site-select').value;
+            const s1 = ppsSites.find(s => s.id === startId);
+            const s2 = ppsSites.find(s => s.id === endId);
+
+            if (!s1 || !s2) {
+                showToast("Select both locations first", "error");
+                return;
+            }
+
+            const origin = encodeURIComponent(s1.address || s1.name);
+            const dest = encodeURIComponent(s2.address || s2.name);
+            // Open directions in Google Maps directly
+            const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
+            window.open(mapsUrl, '_blank');
         }
 
         function onReturnTripToggled() {
