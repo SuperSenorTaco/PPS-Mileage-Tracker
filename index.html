@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPS IT Mileage & Site Log - Portland Public Schools</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pps: {
+                            navy: '#002B49',
+                            navyLight: '#08416d',
+                            navyDark: '#00182b',
+                            navyDeep: '#00101d',
+                            gold: '#FFC72C',
+                            goldLight: '#ffe07d',
+                            goldDark: '#d49b06',
+                            emerald: '#059669',
+                            emeraldDark: '#047857'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace']
+                    },
+                    boxShadow: {
+                        'glow-gold': '0 0 25px -4px rgba(255, 199, 44, 0.35)',
+                        'glow-navy': '0 0 25px -4px rgba(0, 43, 73, 0.4)',
+                        'glow-emerald': '0 0 25px -4px rgba(16, 185, 129, 0.35)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome Pro / Free Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Smooth transitions & subtle custom styles */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Ambient Glass Card Effect */
+        .glass-card {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Pulse glow animation for active items */
+        @keyframes softPulse {
+            0%, 100% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        .pulse-subtle {
+            animation: softPulse 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 43, 73, 0.3);
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255, 199, 44, 0.25);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 43, 73, 0.5);
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 199, 44, 0.45);
+        }
+
+        /* Shiny badge gradient */
+        .gold-badge-shimmer {
+            background: linear-gradient(135deg, #FFC72C 0%, #F59E0B 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-[#0b131e] text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased transition-colors duration-200 selection:bg-pps-gold selection:text-pps-navyDark">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-gradient-to-r from-pps-navyDark via-pps-navy to-pps-navyLight text-white shadow-lg sticky top-0 z-40 border-b border-pps-gold/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-tr from-pps-goldDark via-pps-gold to-yellow-200 flex items-center justify-center text-pps-navyDark shadow-md shadow-pps-gold/20 flex-shrink-0 transform hover:rotate-3 transition duration-200">
+                        <i class="fas fa-network-wired text-xl sm:text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs uppercase tracking-widest font-extrabold text-pps-gold">Portland Public Schools</span>
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-pps-gold/20 text-pps-gold border border-pps-gold/40">IT Field Ops</span>
+                        </div>
+                        <h1 class="text-base sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            Mileage & Site Log
+                            <span class="hidden sm:inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        </h1>
+                    </div>
+                </div>
+
+                <!-- Header Actions & Controls -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <!-- Current Base Location Indicator Pill -->
+                    <button onclick="openBaseSiteModal()" class="hidden md:flex items-center text-xs bg-black/30 hover:bg-black/45 px-3 py-1.5 rounded-full border border-pps-gold/30 transition group" title="Click to change your starting home/office base">
+                        <span class="text-pps-gold mr-1.5"><i class="fas fa-house-chimney text-xs group-hover:scale-110 transition"></i> Base:</span>
+                        <span id="header-base-label" class="font-semibold text-white truncate max-w-[130px] lg:max-w-[180px]">BPS / PEC HQ</span>
+                        <i class="fas fa-pen ml-1.5 text-[10px] text-pps-gold/60 group-hover:text-pps-gold"></i>
+                    </button>
+
+                    <!-- Manage PPS Sites Modal Trigger -->
+                    <button onclick="openSitesModal()" class="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-xs sm:text-sm px-3 py-1.5 sm:py-2 rounded-lg transition font-medium text-white shadow-sm" title="Manage PPS School Directory and Google Sheets Import">
+                        <i class="fas fa-map-location-dot text-pps-gold"></i>
+                        <span class="hidden sm:inline">PPS Sites</span>
+                    </button>
+
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle-btn" onclick="toggleTheme()" class="p-2 sm:p-2.5 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition border border-transparent hover:border-white/10" title="Toggle Light/Dark Theme">
+                        <i id="theme-toggle-icon" class="fas fa-moon text-base sm:text-lg text-pps-gold"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 flex-grow w-full">
+
+        <!-- Top Banner: Federal IRS Reimbursement Rate & Mileage Stats -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-pps-navy via-pps-navyLight to-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-xl border border-pps-gold/30 mb-6">
+            <div class="absolute -right-10 -bottom-10 w-44 h-44 bg-pps-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-pps-gold/20 border border-pps-gold/40 flex items-center justify-center text-pps-gold text-2xl flex-shrink-0 shadow-inner">
+                        <i class="fas fa-hand-holding-dollar"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="font-extrabold text-sm sm:text-base tracking-tight text-white">IRS Mileage Reimbursement Rate</h2>
+                            <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">Active</span>
+                        </div>
+                        <p class="text-xs text-slate-300 max-w-lg mt-0.5 leading-relaxed">
+                            Official rate applied automatically to every logged route and exported directly to your Google Sheet reimbursement tab.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Rate Modifier & Quick Help -->
+                <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end bg-black/25 backdrop-blur-md p-2 rounded-xl border border-white/10">
+                    <div class="text-right pl-2">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-300 block">Federal Rate</span>
+                        <span class="text-[11px] text-pps-gold font-medium">Per Billable Mile</span>
+                    </div>
+                    <div class="relative w-28">
+                        <span class="absolute left-2.5 top-2 text-xs font-bold text-pps-gold">$</span>
+                        <input type="number" id="federal-rate-input" step="0.005" min="0" value="0.67" onchange="updateMileageRate(this.value)" class="w-full pl-6 pr-2.5 py-1.5 bg-pps-navyDark/90 border border-pps-gold/60 rounded-lg text-sm font-bold text-pps-gold focus:outline-none focus:ring-2 focus:ring-pps-gold text-right shadow-inner">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Quick Base Site Indicator Bar -->
+        <div class="mb-6 bg-white dark:bg-slate-800/80 p-3 sm:p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+                <span class="px-2.5 py-1 rounded-md bg-pps-gold/15 text-pps-navy dark:text-pps-gold font-bold flex items-center gap-1.5 border border-pps-gold/30">
+                    <i class="fas fa-home-user"></i> Starting Home/HQ Base:
+                </span>
+                <span id="base-site-display-name" class="font-bold text-slate-900 dark:text-white">Prophet Education Center (BPS / HQ)</span>
+            </div>
+            <button onclick="openBaseSiteModal()" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold px-3 py-1.5 rounded-lg transition border border-slate-300 dark:border-slate-600 flex items-center gap-1.5 self-end sm:self-auto">
+                <i class="fas fa-sliders text-pps-navy dark:text-pps-gold"></i> Change Starting Base
+            </button>
+        </div>
+
+        <!-- View Navigation Tabs -->
+        <div class="grid grid-cols-2 p-1.5 bg-slate-200 dark:bg-slate-900 rounded-xl mb-6 border border-slate-300 dark:border-slate-700/60 shadow-inner">
+            <button id="tab-log-btn" onclick="switchTab('log')" class="py-2.5 px-4 text-center font-bold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 bg-pps-navy text-white shadow-md">
+                <i class="fas fa-calendar-day text-pps-gold"></i>
+                <span>Daily Route Logger</span>
+            </button>
+            <button id="tab-history-btn" onclick="switchTab('history')" class="py-2.5 px-4 text-center font-medium text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-pps-navy dark:hover:text-pps-gold rounded-lg transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-table-list"></i>
+                <span>Pay Period & History Report</span>
+            </button>
+        </div>
+
+        <!-- ======================================================================
+             TAB 1: DAILY ROUTE LOGGER
+             ====================================================================== -->
+        <div id="tab-log-content" class="space-y-6">
+
+            <!-- Date Selector and Quick Navigation Header -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/80 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <button onclick="shiftSelectedDate(-1)" class="p-2 sm:px-3 sm:py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center gap-1">
+                        <i class="fas fa-chevron-left text-xs"></i> <span class="hidden sm:inline">Prev Day</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <i class="far fa-calendar-check text-pps-navy dark:text-pps-gold"></i>
+                        <input type="date" id="daily-date-picker" onchange="onDateChanged(this.value)" class="bg-transparent text-slate-900 dark:text-white font-bold text-xs sm:text-sm focus:outline-none">
+                    </div>
+
+                    <button onclick="shiftSelectedDate(1)" class="p-2 sm:px-3 sm:py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition flex items-center gap-1">
+                        <span class="hidden sm:inline">Next Day</span> <i class="fas fa-chevron-right text-xs"></i>
+                    </button>
+
+                    <button onclick="setDateToToday()" class="px-3 py-2 rounded-lg bg-pps-navy/10 dark:bg-pps-gold/10 hover:bg-pps-navy/20 dark:hover:bg-pps-gold/20 text-pps-navy dark:text-pps-gold text-xs font-bold transition">
+                        Today
+                    </button>
+                </div>
+
+                <!-- Display Formatted Date -->
+                <div class="text-right">
+                    <span id="selected-date-friendly" class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white block">Today</span>
+                    <span class="text-[11px] text-slate-500 dark:text-slate-400">Active Work Day Log</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                <!-- Left Column: Add Trip Card Form (5 cols) -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/80 p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-pps-navy text-pps-gold flex items-center justify-center text-xs font-bold shadow">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <h3 class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">Record Site Visit</h3>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Step-by-Step</span>
+                    </div>
+
+                    <!-- Quick Route Chips: One-tap site destination pills -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                <i class="fas fa-bolt text-pps-gold mr-1"></i> Quick Jump Clusters
+                            </label>
+                            <span class="text-[10px] text-slate-400">Click to fill</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" onclick="quickSelectDestination('pec-hq')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-pps-gold/20 hover:text-pps-navy dark:hover:text-pps-gold text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition border border-slate-200 dark:border-slate-600">
+                                🏢 PEC HQ
+                            </button>
+                            <button type="button" onclick="quickSelectDestination('grant-hs')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-pps-gold/20 hover:text-pps-navy dark:hover:text-pps-gold text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition border border-slate-200 dark:border-slate-600">
+                                🏫 Grant HS
+                            </button>
+                            <button type="button" onclick="quickSelectDestination('lincoln-hs')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-pps-gold/20 hover:text-pps-navy dark:hover:text-pps-gold text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition border border-slate-200 dark:border-slate-600">
+                                🏫 Lincoln HS
+                            </button>
+                            <button type="button" onclick="quickSelectDestination('franklin-hs')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-pps-gold/20 hover:text-pps-navy dark:hover:text-pps-gold text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition border border-slate-200 dark:border-slate-600">
+                                🏫 Franklin HS
+                            </button>
+                            <button type="button" onclick="quickSelectDestination('roosevelt-hs')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-700/60 hover:bg-pps-gold/20 hover:text-pps-navy dark:hover:text-pps-gold text-[11px] font-semibold text-slate-700 dark:text-slate-300 transition border border-slate-200 dark:border-slate-600">
+                                🏫 Roosevelt
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Origin Site Selector -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="start-site-select" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                                <i class="fas fa-circle-dot text-emerald-500 text-xs"></i> 1. Start Location
+                            </label>
+                            <button type="button" onclick="swapStartEndSites()" class="text-[11px] font-semibold text-pps-navy dark:text-pps-gold hover:underline flex items-center gap-1">
+                                <i class="fas fa-arrow-right-arrow-left"></i> Swap
+                            </button>
+                        </div>
+                        <select id="start-site-select" onchange="calculateEstimatedDistance()" class="w-full p-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy dark:focus:ring-pps-gold focus:outline-none">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Destination Site Selector -->
+                    <div>
+                        <label for="end-site-select" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-location-dot text-red-500 text-xs"></i> 2. Destination Site
+                        </label>
+                        <select id="end-site-select" onchange="calculateEstimatedDistance()" class="w-full p-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy dark:focus:ring-pps-gold focus:outline-none">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Mileage & Return Trip Controls -->
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label for="trip-miles-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                                Miles Traveled:
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="trip-miles-input" step="0.1" min="0" placeholder="0.0" oninput="updateLivePayoutPreview()" class="w-full p-2.5 pr-8 text-sm font-bold bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy dark:focus:ring-pps-gold focus:outline-none text-right">
+                                <span class="absolute right-2.5 top-2.5 text-xs font-semibold text-slate-400">mi</span>
+                            </div>
+                        </div>
+
+                        <!-- Live Payout Badge Preview -->
+                        <div>
+                            <span class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
+                                Trip Payout:
+                            </span>
+                            <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 rounded-xl text-right">
+                                <span id="form-payout-preview" class="text-sm font-black text-emerald-700 dark:text-emerald-400">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Return Trip Checkbox -->
+                    <label class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-900 transition">
+                        <input type="checkbox" id="return-trip-checkbox" onchange="onReturnTripToggled()" class="w-4 h-4 rounded text-pps-navy focus:ring-pps-gold dark:focus:ring-pps-gold text-pps-navyDark">
+                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                            Round Trip (Doubles mileage to return to start)
+                        </span>
+                    </label>
+
+                    <!-- Purpose / Helpdesk Ticket Number -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="trip-purpose-input" class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                                Ticket # / IT Purpose:
+                            </label>
+                            <span class="text-[10px] text-slate-400">Optional</span>
+                        </div>
+                        <div class="relative">
+                            <input type="text" id="trip-purpose-input" placeholder="e.g. INC-4821 Smartboard setup, lab switch repair" class="w-full pl-8 pr-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy dark:focus:ring-pps-gold focus:outline-none">
+                            <i class="fas fa-ticket text-slate-400 absolute left-2.5 top-2.5 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Add Button -->
+                    <button type="button" onclick="logCurrentTrip()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-pps-navy to-pps-navyLight hover:from-pps-navyDark hover:to-pps-navy text-white font-bold text-sm shadow-lg shadow-pps-navy/30 hover:shadow-pps-navy/50 transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+                        <i class="fas fa-plus-circle text-pps-gold text-base"></i>
+                        <span>Add Route To Daily Log</span>
+                    </button>
+                </div>
+
+                <!-- Right Column: Daily Ledger & Google Sheets Exporter (7 cols) -->
+                <div class="lg:col-span-7 space-y-4">
+
+                    <!-- Metric Cards -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm relative overflow-hidden">
+                            <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Daily Distance</div>
+                            <div class="flex items-baseline gap-1 mt-1">
+                                <span id="daily-total-miles" class="text-2xl sm:text-3xl font-black text-pps-navy dark:text-pps-gold">0.0</span>
+                                <span class="text-xs font-bold text-slate-500">miles</span>
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-1">
+                                Total billable today
+                            </div>
+                            <div class="absolute right-3 bottom-3 text-3xl text-pps-navy/5 dark:text-pps-gold/10 pointer-events-none">
+                                <i class="fas fa-route"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-4 rounded-2xl border border-emerald-700/60 shadow-md relative overflow-hidden">
+                            <div class="text-[11px] font-bold text-emerald-300 uppercase tracking-wider">Estimated Payout</div>
+                            <div class="mt-1">
+                                <span id="daily-total-payout" class="text-2xl sm:text-3xl font-black text-emerald-400">$0.00</span>
+                            </div>
+                            <div class="text-[11px] text-emerald-300/80 mt-1">
+                                @ $<span id="daily-rate-indicator">0.67</span>/mile IRS rate
+                            </div>
+                            <div class="absolute right-3 bottom-3 text-3xl text-emerald-400/10 pointer-events-none">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Ledger Table Container -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/80 overflow-hidden flex flex-col">
+                        
+                        <!-- Table Action Toolbar -->
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-700/80 flex flex-wrap items-center justify-between gap-2.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-200">
+                                    Today's Sequential Routes
+                                </span>
+                                <span id="trip-count-badge" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-extrabold px-2 py-0.5 rounded-full">
+                                    0
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <!-- Direct Google Sheets Copy Button -->
+                                <button onclick="copyDailyForGoogleSheets()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1.5" title="Copy formatted table with mileage & payout directly for Google Sheets">
+                                    <i class="fas fa-file-excel"></i>
+                                    <span>Copy for Google Sheets</span>
+                                </button>
+                                <!-- CSV Export -->
+                                <button onclick="exportDailyCSV()" class="bg-slate-600 hover:bg-slate-700 active:scale-95 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition shadow-sm flex items-center gap-1" title="Download CSV">
+                                    <i class="fas fa-download"></i>
+                                    <span class="hidden sm:inline">CSV</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Table Scroll Wrapper -->
+                        <div class="overflow-x-auto min-h-[220px]">
+                            <table class="w-full text-left text-xs sm:text-sm">
+                                <thead class="bg-slate-100/70 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-700">
+                                    <tr>
+                                        <th class="py-2.5 px-3">#</th>
+                                        <th class="py-2.5 px-3">Route Segment</th>
+                                        <th class="py-2.5 px-3">Purpose / Ticket</th>
+                                        <th class="py-2.5 px-3 text-right">Miles</th>
+                                        <th class="py-2.5 px-3 text-right">Payout</th>
+                                        <th class="py-2.5 px-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="daily-trips-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+
+                            <!-- Empty State Message -->
+                            <div id="no-trips-message" class="text-center py-10 px-4 text-slate-400 dark:text-slate-500">
+                                <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center text-slate-400 mb-2">
+                                    <i class="fas fa-route text-xl"></i>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">No routes logged for this day</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Select your destination and click "Add Route" to start logging.</p>
+                            </div>
+                        </div>
+
+                        <!-- Google Sheets Raw TSV Drawer Preview -->
+                        <div class="p-3 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-700/80">
+                            <details class="text-xs group">
+                                <summary class="font-semibold text-slate-600 dark:text-slate-300 cursor-pointer hover:text-pps-navy dark:hover:text-pps-gold flex items-center justify-between">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-table-cells text-emerald-600 dark:text-emerald-400"></i>
+                                        <span>Google Sheets Clipboard Format Preview</span>
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                                </summary>
+                                <pre id="sheets-preview-box" class="mt-2.5 p-3 bg-slate-950 text-emerald-400 rounded-xl text-[11px] font-mono overflow-x-auto whitespace-pre leading-relaxed select-all border border-emerald-950">Ready to copy...</pre>
+                            </details>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ======================================================================
+             TAB 2: HISTORY & PAY PERIOD REPORTING
+             ====================================================================== -->
+        <div id="tab-history-content" class="hidden space-y-6">
+
+            <!-- Filter Controls Banner -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/80 p-5 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="font-extrabold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-filter text-pps-navy dark:text-pps-gold"></i>
+                            Reimbursement Pay Period Filter
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Filter historical visits by standard PPS payroll periods (16th-15th) or custom calendar windows.
+                        </p>
+                    </div>
+
+                    <!-- Presets Dropdown -->
+                    <div class="flex items-center gap-2">
+                        <label for="history-filter-preset" class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                            Presets:
+                        </label>
+                        <select id="history-filter-preset" onchange="applyHistoryFilterPreset()" class="p-2 text-xs font-semibold bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy focus:outline-none">
+                            <option value="pay-period-current">Current PPS Pay Period (16th - 15th)</option>
+                            <option value="this-month">Current Calendar Month</option>
+                            <option value="last-month">Previous Calendar Month</option>
+                            <option value="all">All Recorded History</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date Range Selectors -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                    <div>
+                        <label for="history-start-date" class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                            From Date:
+                        </label>
+                        <input type="date" id="history-start-date" onchange="renderHistoryView()" class="w-full p-2 text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="history-end-date" class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                            To Date:
+                        </label>
+                        <input type="date" id="history-end-date" onchange="renderHistoryView()" class="w-full p-2 text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div class="sm:col-span-2 flex items-end gap-2 justify-end">
+                        <button onclick="copyFilteredForSheets()" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow flex items-center justify-center gap-1.5">
+                            <i class="fas fa-copy"></i> Copy Range for Sheets
+                        </button>
+                        <button onclick="exportFilteredCSV()" class="flex-1 sm:flex-initial bg-pps-navy dark:bg-slate-700 hover:bg-pps-navyDark text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow flex items-center justify-center gap-1.5">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Summary Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm">
+                    <span class="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">Total Visits In Range</span>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-1">
+                        <span id="history-record-count">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm">
+                    <span class="text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400">Accumulated Miles</span>
+                    <div class="text-2xl font-black text-pps-navy dark:text-pps-gold mt-1">
+                        <span id="history-filtered-total">0.0</span> <span class="text-xs text-slate-400 font-semibold">mi</span>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-900 text-white p-4 rounded-2xl border border-emerald-700 shadow-sm">
+                    <span class="text-[11px] font-bold uppercase text-emerald-300">Reimbursement Payout</span>
+                    <div class="text-2xl font-black text-emerald-400 mt-1">
+                        <span id="history-filtered-payout">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Table Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/80 overflow-hidden">
+                <div class="overflow-x-auto min-h-[300px]">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead class="bg-slate-100/70 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200 dark:border-slate-700">
+                            <tr>
+                                <th class="py-3 px-4">Date</th>
+                                <th class="py-3 px-4">Origin / Destination</th>
+                                <th class="py-3 px-4">Ticket / Notes</th>
+                                <th class="py-3 px-4 text-right">Miles</th>
+                                <th class="py-3 px-4 text-right">Rate</th>
+                                <th class="py-3 px-4 text-right">Payout ($)</th>
+                                <th class="py-3 px-4 text-center">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-trips-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+
+                    <div id="no-history-message" class="text-center py-12 text-slate-400 dark:text-slate-500">
+                        <i class="fas fa-folder-open text-3xl mb-2 block"></i>
+                        <p class="text-xs sm:text-sm font-semibold">No mileage records found matching this date filter.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: Manage PPS Site Database & Google Sheets Tab Importer -->
+    <div id="sites-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            
+            <!-- Modal Header -->
+            <div class="p-4 sm:p-5 bg-gradient-to-r from-pps-navyDark via-pps-navy to-pps-navyLight text-white flex justify-between items-center border-b border-pps-gold/30">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-lg bg-pps-gold text-pps-navyDark flex items-center justify-center font-bold text-sm">
+                        <i class="fas fa-school"></i>
+                    </span>
+                    <div>
+                        <h3 class="font-extrabold text-sm sm:text-base text-white">PPS Site Database & Importer</h3>
+                        <p class="text-[11px] text-slate-300">Synchronize locations directly with your Google Sheet tab</p>
+                    </div>
+                </div>
+                <button onclick="closeSitesModal()" class="text-slate-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition">
+                    <i class="fas fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-5 flex-grow">
+                
+                <!-- Google Sheets Bulk Importer Box -->
+                <div class="bg-emerald-50/70 dark:bg-emerald-950/30 p-4 sm:p-5 rounded-2xl border border-emerald-300 dark:border-emerald-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fas fa-file-import text-emerald-600 dark:text-emerald-400"></i> Import Directly From Google Sheets Tab
+                        </span>
+                        <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded">Paste TSV</span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Copy columns straight from your Google Sheet (Format: <strong>Site Name | Address | Category</strong>) and paste below:
+                    </p>
+                    <textarea id="import-paste-area" rows="3" placeholder="Example format:&#10;Skyline Elementary&#t11536 NW Skyline Blvd&#tElementary&#10;Llewellyn Elementary&#t6301 SE 14th Ave&#tElementary&#10;Benson Tech HS&#t546 NE 12th Ave&#tHigh School" class="w-full p-3 text-xs font-mono bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 dark:text-slate-200"></textarea>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="processPastedSheetLocations()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                            <i class="fas fa-file-circle-plus"></i> Import Google Sheet Rows
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Single Custom Site Form -->
+                <div class="bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                    <span class="text-xs font-extrabold text-pps-navy dark:text-pps-gold uppercase">Add Single Site / Warehouse / Annex</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <input type="text" id="new-site-name" placeholder="Site Name (e.g. Skyline ES)" class="px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white">
+                        <input type="text" id="new-site-address" placeholder="Address (e.g. 11536 NW Skyline)" class="px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white">
+                        <div class="flex gap-2">
+                            <input type="text" id="new-site-category" placeholder="Cluster/Category" class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white">
+                            <button onclick="addNewCustomSite()" class="bg-pps-navy hover:bg-pps-navyDark text-white text-xs font-bold py-2 px-3.5 rounded-lg transition whitespace-nowrap">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Database Status & Reset -->
+                <div class="flex justify-between items-center px-1">
+                    <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">Active Directory: <strong id="sites-count-label" class="text-slate-900 dark:text-white">0</strong> locations</span>
+                    <button onclick="resetSitesToDefault()" class="text-xs text-red-600 dark:text-red-400 hover:underline font-semibold flex items-center gap-1">
+                        <i class="fas fa-rotate-left"></i> Restore Standard PPS Defaults
+                    </button>
+                </div>
+
+                <!-- Sites Directory Table -->
+                <div class="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden max-h-56 overflow-y-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 uppercase font-bold sticky top-0">
+                            <tr>
+                                <th class="p-2.5">Site Name</th>
+                                <th class="p-2.5">Address</th>
+                                <th class="p-2.5">Category</th>
+                                <th class="p-2.5 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sites-modal-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+                <button onclick="closeSitesModal()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 px-4 py-2 text-xs font-bold rounded-xl transition">
+                    Done
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL 2: Change Default Base Site Modal -->
+    <div id="base-site-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-4 bg-pps-navy text-white flex justify-between items-center border-b border-pps-gold/30">
+                <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2">
+                    <i class="fas fa-house-chimney text-pps-gold"></i> Set Starting Base Location
+                </h3>
+                <button onclick="closeBaseSiteModal()" class="text-slate-300 hover:text-white p-1">
+                    <i class="fas fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Select your primary PPS reporting office, warehouse, or home base. This location will automatically prefill as your starting origin each morning.
+                </p>
+                <div>
+                    <label for="base-site-select" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                        Default Base Site:
+                    </label>
+                    <select id="base-site-select" class="w-full p-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-pps-navy focus:outline-none">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+                <button onclick="closeBaseSiteModal()" class="px-3.5 py-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition font-semibold">
+                    Cancel
+                </button>
+                <button onclick="saveBaseSite()" class="bg-pps-navy hover:bg-pps-navyDark text-white px-4 py-2 text-xs font-bold rounded-xl shadow transition flex items-center gap-1.5">
+                    <i class="fas fa-check text-pps-gold"></i> Save Base Location
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Interactive Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-pps-navyDark text-white px-4 py-3 rounded-xl shadow-2xl border border-pps-gold/50 flex items-center gap-3 max-w-md">
+            <span id="toast-icon" class="text-pps-gold text-lg"><i class="fas fa-circle-check"></i></span>
+            <span id="toast-message" class="text-xs sm:text-sm font-semibold">Success</span>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. INITIAL STATE & PPS MASTER DATA
+           ========================================================================== */
+
+        const DEFAULT_PPS_SITES = [
+            { id: 'pec-hq', name: 'Prophet Education Center (BPS / HQ)', address: '501 N Dixon St, Portland, OR 97227', category: 'HQ / IT Office' },
+            { id: 'grant-hs', name: 'Grant High School', address: '2245 NE 36th Ave, Portland, OR 97212', category: 'High School' },
+            { id: 'lincoln-hs', name: 'Lincoln High School', address: '1750 SW Salmon St, Portland, OR 97205', category: 'High School' },
+            { id: 'franklin-hs', name: 'Franklin High School', address: '5405 SE Woodward St, Portland, OR 97206', category: 'High School' },
+            { id: 'roosevelt-hs', name: 'Roosevelt High School', address: '6941 N Central St, Portland, OR 97203', category: 'High School' },
+            { id: 'cleveland-hs', name: 'Cleveland High School', address: '3400 SE 26th Ave, Portland, OR 97202', category: 'High School' },
+            { id: 'mcdaniel-hs', name: 'McDaniel High School', address: '2735 NE 82nd Ave, Portland, OR 97220', category: 'High School' },
+            { id: 'wells-hs', name: 'Wells (Wilson) High School', address: '1151 SW Vermont St, Portland, OR 97219', category: 'High School' },
+            { id: 'jefferson-hs', name: 'Jefferson High School', address: '5210 N Kerby Ave, Portland, OR 97217', category: 'High School' },
+            { id: 'benson-hs', name: 'Benson Polytechnic High School', address: '546 NE 12th Ave, Portland, OR 97232', category: 'High School' },
+            { id: 'da-vinci-ms', name: 'da Vinci Arts Middle School', address: '2508 NE Everett St, Portland, OR 97232', category: 'Middle School' },
+            { id: 'hosford-ms', name: 'Hosford Middle School', address: '2303 SE 28th Pl, Portland, OR 97214', category: 'Middle School' },
+            { id: 'lane-ms', name: 'Lane Middle School', address: '7200 SE 60th Ave, Portland, OR 97206', category: 'Middle School' },
+            { id: 'mt-tabor-ms', name: 'Mt. Tabor Middle School', address: '5800 SE Ash St, Portland, OR 97215', category: 'Middle School' },
+            { id: 'oakhurst-wh', name: 'Columbia Warehouse & Distribution', address: '716 NE Marine Dr, Portland, OR 97211', category: 'Operations / Facilities' },
+            { id: 'skyline-es', name: 'Skyline Elementary', address: '11536 NW Skyline Blvd, Portland, OR 97231', category: 'Elementary' },
+            { id: 'llewellyn-es', name: 'Llewellyn Elementary', address: '6301 SE 14th Ave, Portland, OR 97202', category: 'Elementary' }
+        ];
+
+        // Estimated distance matrix between key hubs (in one-way road miles)
+        const ESTIMATED_DISTANCES = {
+            'pec-hq:grant-hs': 2.6,
+            'pec-hq:lincoln-hs': 2.8,
+            'pec-hq:franklin-hs': 5.2,
+            'pec-hq:roosevelt-hs': 6.1,
+            'pec-hq:cleveland-hs': 3.9,
+            'pec-hq:mcdaniel-hs': 6.8,
+            'pec-hq:wells-hs': 6.4,
+            'pec-hq:jefferson-hs': 1.8,
+            'pec-hq:benson-hs': 1.4,
+            'pec-hq:skyline-es': 11.2,
+            'grant-hs:franklin-hs': 3.7,
+            'grant-hs:mcdaniel-hs': 3.4,
+            'lincoln-hs:wells-hs': 4.1,
+            'roosevelt-hs:jefferson-hs': 4.5,
+            'cleveland-hs:franklin-hs': 2.3
+        };
+
+        // Application State
+        let ppsSites = [];
+        let tripLogs = [];
+        let federalMileageRate = 0.67; // Federal IRS standard rate
+        let baseSiteId = 'pec-hq';
+        let selectedDate = '';
+
+        /* ==========================================================================
+           2. AUDIO FEEDBACK CUES (Web Audio API Synthesizer)
+           ========================================================================== */
+
+        function playSoftChime() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.25);
+            } catch (e) {
+                // Audio context not allowed before interaction
+            }
+        }
+
+        /* ==========================================================================
+           3. APPLICATION INITIALIZATION & STORAGE
+           ========================================================================== */
+
+        window.onload = function () {
+            initTheme();
+            loadLocalStorageData();
+
+            // Set initial selected date to today
+            const todayStr = formatDateIso(new Date());
+            selectedDate = todayStr;
+            const datePicker = document.getElementById('daily-date-picker');
+            if (datePicker) datePicker.value = selectedDate;
+
+            // Set initial filter date ranges (PPS Pay period 16th - 15th)
+            applyHistoryFilterPreset();
+
+            // Render view
+            populateSiteDropdowns();
+            updateBaseSiteLabelDisplay();
+            renderDailyView();
+            updateLivePayoutPreview();
+        };
+
+        function loadLocalStorageData() {
+            // Load Sites
+            const storedSites = localStorage.getItem('pps_it_sites');
+            if (storedSites) {
+                try {
+                    ppsSites = JSON.parse(storedSites);
+                } catch (e) {
+                    ppsSites = [...DEFAULT_PPS_SITES];
+                }
+            } else {
+                ppsSites = [...DEFAULT_PPS_SITES];
+            }
+
+            // Load Trip Logs
+            const storedTrips = localStorage.getItem('pps_it_triplogs');
+            if (storedTrips) {
+                try {
+                    tripLogs = JSON.parse(storedTrips);
+                } catch (e) {
+                    tripLogs = [];
+                }
+            } else {
+                tripLogs = [];
+            }
+
+            // Load Mileage Rate
+            const storedRate = localStorage.getItem('pps_it_federal_rate');
+            if (storedRate) {
+                federalMileageRate = parseFloat(storedRate) || 0.67;
+            }
+            const rateInput = document.getElementById('federal-rate-input');
+            if (rateInput) rateInput.value = federalMileageRate;
+
+            const rateIndicator = document.getElementById('daily-rate-indicator');
+            if (rateIndicator) rateIndicator.innerText = federalMileageRate.toFixed(2);
+
+            // Load Base Site
+            const storedBase = localStorage.getItem('pps_it_base_site');
+            if (storedBase) {
+                baseSiteId = storedBase;
+            }
+        }
+
+        function saveSitesToStorage() {
+            localStorage.setItem('pps_it_sites', JSON.stringify(ppsSites));
+        }
+
+        function saveTripLogsToStorage() {
+            localStorage.setItem('pps_it_triplogs', JSON.stringify(tripLogs));
+        }
+
+        function updateMileageRate(newRate) {
+            const val = parseFloat(newRate);
+            if (isNaN(val) || val < 0) {
+                showToast("Please enter a valid rate", "error");
+                return;
+            }
+            federalMileageRate = val;
+            localStorage.setItem('pps_it_federal_rate', federalMileageRate.toString());
+
+            const rateIndicator = document.getElementById('daily-rate-indicator');
+            if (rateIndicator) rateIndicator.innerText = federalMileageRate.toFixed(2);
+
+            updateLivePayoutPreview();
+            renderDailyView();
+            renderHistoryView();
+            showToast(`Updated rate to $${federalMileageRate.toFixed(3)}/mi`);
+        }
+
+        /* ==========================================================================
+           4. SITE DROPDOWNS & AUTO-SEQUENCING
+           ========================================================================== */
+
+        function populateSiteDropdowns() {
+            const startSelect = document.getElementById('start-site-select');
+            const endSelect = document.getElementById('end-site-select');
+            const baseSelect = document.getElementById('base-site-select');
+
+            if (!startSelect || !endSelect) return;
+
+            // Preserve current selections if valid
+            const currentStart = startSelect.value;
+            const currentEnd = endSelect.value;
+
+            // Group by category
+            const categories = {};
+            ppsSites.forEach(s => {
+                const cat = s.category || 'Other Sites';
+                if (!categories[cat]) categories[cat] = [];
+                categories[cat].push(s);
+            });
+
+            function buildOptionsHtml() {
+                let html = '';
+                for (const cat in categories) {
+                    html += `<optgroup label="${cat}">`;
+                    categories[cat].forEach(site => {
+                        html += `<option value="${site.id}">${site.name}</option>`;
+                    });
+                    html += `</optgroup>`;
+                }
+                return html;
+            }
+
+            const optionsHtml = buildOptionsHtml();
+            startSelect.innerHTML = optionsHtml;
+            endSelect.innerHTML = optionsHtml;
+            if (baseSelect) baseSelect.innerHTML = optionsHtml;
+
+            // Set sequential default: Start is either last destination of today OR default base
+            const todaysTrips = tripLogs.filter(t => t.date === selectedDate);
+            if (todaysTrips.length > 0) {
+                const lastTrip = todaysTrips[todaysTrips.length - 1];
+                startSelect.value = lastTrip.endSiteId || baseSiteId;
+            } else {
+                startSelect.value = currentStart && ppsSites.some(s => s.id === currentStart) ? currentStart : baseSiteId;
+            }
+
+            // Pick a different default for destination
+            if (currentEnd && currentEnd !== startSelect.value && ppsSites.some(s => s.id === currentEnd)) {
+                endSelect.value = currentEnd;
+            } else {
+                const alternate = ppsSites.find(s => s.id !== startSelect.value);
+                if (alternate) endSelect.value = alternate.id;
+            }
+
+            if (baseSelect) baseSelect.value = baseSiteId;
+            calculateEstimatedDistance();
+        }
+
+        function quickSelectDestination(siteId) {
+            const endSelect = document.getElementById('end-site-select');
+            if (!endSelect) return;
+            endSelect.value = siteId;
+            calculateEstimatedDistance();
+            updateLivePayoutPreview();
+            playSoftChime();
+        }
+
+        function swapStartEndSites() {
+            const startSelect = document.getElementById('start-site-select');
+            const endSelect = document.getElementById('end-site-select');
+            const temp = startSelect.value;
+            startSelect.value = endSelect.value;
+            endSelect.value = temp;
+            calculateEstimatedDistance();
+            updateLivePayoutPreview();
+        }
+
+        function calculateEstimatedDistance() {
+            const startId = document.getElementById('start-site-select').value;
+            const endId = document.getElementById('end-site-select').value;
+            const milesInput = document.getElementById('trip-miles-input');
+            const isRoundTrip = document.getElementById('return-trip-checkbox').checked;
+
+            if (startId === endId) {
+                milesInput.value = (0.0).toFixed(1);
+                updateLivePayoutPreview();
+                return;
+            }
+
+            // Check distance matrix
+            const key1 = `${startId}:${endId}`;
+            const key2 = `${endId}:${startId}`;
+            let dist = ESTIMATED_DISTANCES[key1] || ESTIMATED_DISTANCES[key2] || null;
+
+            if (dist !== null) {
+                if (isRoundTrip) dist *= 2;
+                milesInput.value = dist.toFixed(1);
+            }
+            updateLivePayoutPreview();
+        }
+
+        function onReturnTripToggled() {
+            calculateEstimatedDistance();
+            updateLivePayoutPreview();
+        }
+
+        function updateLivePayoutPreview() {
+            const miles = parseFloat(document.getElementById('trip-miles-input').value) || 0;
+            const payout = miles * federalMileageRate;
+            const previewEl = document.getElementById('form-payout-preview');
+            if (previewEl) {
+                previewEl.innerText = `$${payout.toFixed(2)}`;
+            }
+        }
+
+        /* ==========================================================================
+           5. DATE MANAGEMENT
+           ========================================================================== */
+
+        function onDateChanged(newDateStr) {
+            selectedDate = newDateStr;
+            populateSiteDropdowns();
+            renderDailyView();
+        }
+
+        function shiftSelectedDate(deltaDays) {
+            const parts = selectedDate.split('-');
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            d.setDate(d.getDate() + deltaDays);
+            selectedDate = formatDateIso(d);
+            document.getElementById('daily-date-picker').value = selectedDate;
+            populateSiteDropdowns();
+            renderDailyView();
+        }
+
+        function setDateToToday() {
+            selectedDate = formatDateIso(new Date());
+            document.getElementById('daily-date-picker').value = selectedDate;
+            populateSiteDropdowns();
+            renderDailyView();
+        }
+
+        /* ==========================================================================
+           6. DAILY LOGIC & RENDERING
+           ========================================================================== */
+
+        function logCurrentTrip() {
+            const startId = document.getElementById('start-site-select').value;
+            const endId = document.getElementById('end-site-select').value;
+            const milesInput = document.getElementById('trip-miles-input');
+            const purposeInput = document.getElementById('trip-purpose-input');
+            const isRoundTrip = document.getElementById('return-trip-checkbox').checked;
+
+            const miles = parseFloat(milesInput.value);
+
+            if (isNaN(miles) || miles <= 0) {
+                showToast("Please enter a valid mileage distance", "error");
+                milesInput.focus();
+                return;
+            }
+
+            const startSite = ppsSites.find(s => s.id === startId);
+            const endSite = ppsSites.find(s => s.id === endId);
+
+            const startName = startSite ? startSite.name : startId;
+            const endName = endSite ? endSite.name : endId;
+
+            const newTrip = {
+                id: 'trip-' + Date.now(),
+                date: selectedDate,
+                startSiteId: startId,
+                startName: startName,
+                endSiteId: endId,
+                endName: endName,
+                isReturnTrip: isRoundTrip,
+                miles: miles,
+                rate: federalMileageRate,
+                payout: miles * federalMileageRate,
+                purpose: purposeInput.value.trim() || 'IT Field Service Support'
+            };
+
+            tripLogs.push(newTrip);
+            saveTripLogsToStorage();
+
+            // Next origin automatically becomes current destination
+            document.getElementById('start-site-select').value = endId;
+            document.getElementById('return-trip-checkbox').checked = false;
+            purposeInput.value = '';
+
+            calculateEstimatedDistance();
+            renderDailyView();
+            playSoftChime();
+            showToast(`Added: ${startName} → ${endName} (${miles.toFixed(1)} mi)`);
+        }
+
+        function deleteTrip(tripId) {
+            tripLogs = tripLogs.filter(t => t.id !== tripId);
+            saveTripLogsToStorage();
+            renderDailyView();
+            renderHistoryView();
+            populateSiteDropdowns();
+            showToast("Trip entry removed");
+        }
+
+        function renderDailyView() {
+            const friendlyDateSpan = document.getElementById('selected-date-friendly');
+            if (friendlyDateSpan) {
+                friendlyDateSpan.innerText = formatDateDisplay(selectedDate);
+            }
+
+            const dailyTrips = tripLogs.filter(t => t.date === selectedDate);
+            const tbody = document.getElementById('daily-trips-tbody');
+            const noTripsMsg = document.getElementById('no-trips-message');
+            const totalMilesSpan = document.getElementById('daily-total-miles');
+            const totalPayoutSpan = document.getElementById('daily-total-payout');
+            const countBadge = document.getElementById('trip-count-badge');
+            const previewBox = document.getElementById('sheets-preview-box');
+
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            let totalMiles = 0;
+            let totalPayout = 0;
+
+            if (countBadge) countBadge.innerText = dailyTrips.length;
+
+            if (dailyTrips.length === 0) {
+                if (noTripsMsg) noTripsMsg.classList.remove('hidden');
+            } else {
+                if (noTripsMsg) noTripsMsg.classList.add('hidden');
+            }
+
+            dailyTrips.forEach((trip, index) => {
+                const tripRate = trip.rate || federalMileageRate;
+                const tripPayout = trip.payout !== undefined ? trip.payout : (trip.miles * tripRate);
+
+                totalMiles += trip.miles;
+                totalPayout += tripPayout;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/70 dark:hover:bg-slate-750 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-bold text-slate-400 text-xs">
+                        #${index + 1}
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                            <span>${escapeHtml(trip.startName)}</span>
+                            <i class="fas fa-arrow-right text-[10px] text-pps-gold"></i>
+                            <span>${escapeHtml(trip.endName)}</span>
+                            ${trip.isReturnTrip ? '<span class="bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-700">Round Trip</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-600 dark:text-slate-300 text-xs">
+                        ${escapeHtml(trip.purpose)}
+                    </td>
+                    <td class="py-3 px-3 text-right font-black text-pps-navy dark:text-pps-gold">
+                        ${trip.miles.toFixed(1)}
+                    </td>
+                    <td class="py-3 px-3 text-right font-black text-emerald-600 dark:text-emerald-400">
+                        $${tripPayout.toFixed(2)}
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                        <button onclick="deleteTrip('${trip.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Delete route entry">
+                            <i class="fas fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (totalMilesSpan) totalMilesSpan.innerText = totalMiles.toFixed(1);
+            if (totalPayoutSpan) totalPayoutSpan.innerText = `$${totalPayout.toFixed(2)}`;
+            if (previewBox) previewBox.innerText = generateTSVData(dailyTrips);
+        }
+
+        /* ==========================================================================
+           7. HISTORY VIEW & PAY PERIOD FILTERING
+           ========================================================================== */
+
+        function switchTab(tab) {
+            const logBtn = document.getElementById('tab-log-btn');
+            const historyBtn = document.getElementById('tab-history-btn');
+            const logContent = document.getElementById('tab-log-content');
+            const historyContent = document.getElementById('tab-history-content');
+
+            if (tab === 'log') {
+                logBtn.className = "py-2.5 px-4 text-center font-bold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 bg-pps-navy text-white shadow-md";
+                historyBtn.className = "py-2.5 px-4 text-center font-medium text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-pps-navy dark:hover:text-pps-gold rounded-lg transition-all flex items-center justify-center gap-2";
+                logContent.classList.remove('hidden');
+                historyContent.classList.add('hidden');
+            } else {
+                historyBtn.className = "py-2.5 px-4 text-center font-bold text-xs sm:text-sm rounded-lg transition-all flex items-center justify-center gap-2 bg-pps-navy text-white shadow-md";
+                logBtn.className = "py-2.5 px-4 text-center font-medium text-xs sm:text-sm text-slate-600 dark:text-slate-400 hover:text-pps-navy dark:hover:text-pps-gold rounded-lg transition-all flex items-center justify-center gap-2";
+                historyContent.classList.remove('hidden');
+                logContent.classList.add('hidden');
+                renderHistoryView();
+            }
+        }
+
+        function applyHistoryFilterPreset() {
+            const preset = document.getElementById('history-filter-preset').value;
+            const startInput = document.getElementById('history-start-date');
+            const endInput = document.getElementById('history-end-date');
+
+            const today = new Date();
+            let start = new Date();
+            let end = new Date();
+
+            if (preset === 'this-month') {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            } else if (preset === 'last-month') {
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+            } else if (preset === 'pay-period-current') {
+                const currentDay = today.getDate();
+                if (currentDay >= 16) {
+                    start = new Date(today.getFullYear(), today.getMonth(), 16);
+                    end = new Date(today.getFullYear(), today.getMonth() + 1, 15);
+                } else {
+                    start = new Date(today.getFullYear(), today.getMonth() - 1, 16);
+                    end = new Date(today.getFullYear(), today.getMonth(), 15);
+                }
+            } else if (preset === 'all') {
+                if (startInput) startInput.value = '';
+                if (endInput) endInput.value = '';
+                renderHistoryView();
+                return;
+            }
+
+            if (startInput) startInput.value = formatDateIso(start);
+            if (endInput) endInput.value = formatDateIso(end);
+            renderHistoryView();
+        }
+
+        function getFilteredHistoryTrips() {
+            const startInput = document.getElementById('history-start-date');
+            const endInput = document.getElementById('history-end-date');
+            const startDateVal = startInput ? startInput.value : '';
+            const endDateVal = endInput ? endInput.value : '';
+
+            return tripLogs.filter(trip => {
+                if (startDateVal && trip.date < startDateVal) return false;
+                if (endDateVal && trip.date > endDateVal) return false;
+                return true;
+            }).sort((a,b) => b.date.localeCompare(a.date));
+        }
+
+        function renderHistoryView() {
+            const filteredTrips = getFilteredHistoryTrips();
+            const tbody = document.getElementById('history-trips-tbody');
+            const noHistoryMsg = document.getElementById('no-history-message');
+            const filteredTotalSpan = document.getElementById('history-filtered-total');
+            const filteredPayoutSpan = document.getElementById('history-filtered-payout');
+            const countSpan = document.getElementById('history-record-count');
+
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (countSpan) countSpan.innerText = filteredTrips.length;
+
+            if (filteredTrips.length === 0) {
+                if (noHistoryMsg) noHistoryMsg.classList.remove('hidden');
+                if (filteredTotalSpan) filteredTotalSpan.innerText = "0.0";
+                if (filteredPayoutSpan) filteredPayoutSpan.innerText = "$0.00";
+                return;
+            }
+
+            if (noHistoryMsg) noHistoryMsg.classList.add('hidden');
+            let totalMiles = 0;
+            let totalPayout = 0;
+
+            filteredTrips.forEach(trip => {
+                const tripRate = trip.rate || federalMileageRate;
+                const tripPayout = trip.payout !== undefined ? trip.payout : (trip.miles * tripRate);
+
+                totalMiles += trip.miles;
+                totalPayout += tripPayout;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                        ${trip.date}
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                            <span>${escapeHtml(trip.startName)}</span>
+                            <i class="fas fa-arrow-right text-[10px] text-pps-gold"></i>
+                            <span>${escapeHtml(trip.endName)}</span>
+                            ${trip.isReturnTrip ? '<span class="bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded">RT</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-300 text-xs">
+                        ${escapeHtml(trip.purpose)}
+                    </td>
+                    <td class="py-3 px-4 text-right font-black text-pps-navy dark:text-pps-gold">
+                        ${trip.miles.toFixed(1)}
+                    </td>
+                    <td class="py-3 px-4 text-right font-bold text-slate-500 text-xs">
+                        $${tripRate.toFixed(3)}
+                    </td>
+                    <td class="py-3 px-4 text-right font-black text-emerald-600 dark:text-emerald-400">
+                        $${tripPayout.toFixed(2)}
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="deleteTrip('${trip.id}')" class="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Delete record">
+                            <i class="fas fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (filteredTotalSpan) filteredTotalSpan.innerText = totalMiles.toFixed(1);
+            if (filteredPayoutSpan) filteredPayoutSpan.innerText = `$${totalPayout.toFixed(2)}`;
+        }
+
+        /* ==========================================================================
+           8. EXPORT & COPY FOR GOOGLE SHEETS
+           ========================================================================== */
+
+        function generateTSVData(tripsList) {
+            if (!tripsList || tripsList.length === 0) return "No entries to copy.";
+            
+            // Format strictly tab-separated for flawless direct pasting into Google Sheets
+            let tsv = "Date\tStart Location\tDestination Site\tRound Trip\tPurpose / Ticket #\tMiles\tRate ($/mi)\tProjected Payout ($)\n";
+            
+            tripsList.forEach(t => {
+                const tripRate = t.rate || federalMileageRate;
+                const tripPayout = t.payout !== undefined ? t.payout : (t.miles * tripRate);
+                const isRt = t.isReturnTrip ? "Yes" : "No";
+
+                tsv += `${t.date}\t${t.startName}\t${t.endName}\t${isRt}\t${t.purpose.replace(/\t/g, ' ')}\t${t.miles.toFixed(1)}\t$${tripRate.toFixed(3)}\t$${tripPayout.toFixed(2)}\n`;
+            });
+            return tsv;
+        }
+
+        function copyDailyForGoogleSheets() {
+            const dailyTrips = tripLogs.filter(t => t.date === selectedDate);
+            if (dailyTrips.length === 0) {
+                showToast("No entries for this date to copy", "error");
+                return;
+            }
+
+            const tsvData = generateTSVData(dailyTrips);
+            copyToClipboard(tsvData, "Copied daily route entries! Simply paste (Ctrl+V) directly into your Google Sheet.");
+            playSoftChime();
+        }
+
+        function copyFilteredForSheets() {
+            const filteredTrips = getFilteredHistoryTrips();
+            if (filteredTrips.length === 0) {
+                showToast("No records in current date filter to copy", "error");
+                return;
+            }
+
+            const tsvData = generateTSVData(filteredTrips);
+            copyToClipboard(tsvData, "Copied pay period records! Ready to paste into Google Sheets.");
+            playSoftChime();
+        }
+
+        function exportDailyCSV() {
+            const dailyTrips = tripLogs.filter(t => t.date === selectedDate);
+            downloadCSV(dailyTrips, `PPS_IT_Mileage_${selectedDate}.csv`);
+        }
+
+        function exportFilteredCSV() {
+            const filteredTrips = getFilteredHistoryTrips();
+            downloadCSV(filteredTrips, `PPS_IT_Mileage_Report_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        function downloadCSV(tripsList, filename) {
+            if (!tripsList || tripsList.length === 0) {
+                showToast("No records available to export", "error");
+                return;
+            }
+
+            let csv = "Date,Start Location,Destination Site,Round Trip,Purpose / Ticket #,Miles,Rate ($/mi),Projected Payout ($)\n";
+            tripsList.forEach(t => {
+                const tripRate = t.rate || federalMileageRate;
+                const tripPayout = t.payout !== undefined ? t.payout : (t.miles * tripRate);
+                const isRt = t.isReturnTrip ? "Yes" : "No";
+
+                const safePurpose = `"${t.purpose.replace(/"/g, '""')}"`;
+                const safeStart = `"${t.startName.replace(/"/g, '""')}"`;
+                const safeEnd = `"${t.endName.replace(/"/g, '""')}"`;
+                
+                csv += `${t.date},${safeStart},${safeEnd},${isRt},${safePurpose},${t.miles.toFixed(1)},${tripRate.toFixed(3)},${tripPayout.toFixed(2)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Downloaded ${filename}`);
+        }
+
+        function copyToClipboard(text, successMessage) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast(successMessage);
+                } else {
+                    showToast("Failed to copy. Please copy manually.", "error");
+                }
+            } catch (err) {
+                showToast("Copy error: " + err, "error");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        /* ==========================================================================
+           9. MODALS, GOOGLE SHEETS IMPORT & BASE SITE
+           ========================================================================== */
+
+        function openSitesModal() {
+            renderSitesModalList();
+            document.getElementById('sites-modal').classList.remove('hidden');
+        }
+
+        function closeSitesModal() {
+            document.getElementById('sites-modal').classList.add('hidden');
+        }
+
+        function renderSitesModalList() {
+            const tbody = document.getElementById('sites-modal-tbody');
+            const countLabel = document.getElementById('sites-count-label');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (countLabel) countLabel.innerText = ppsSites.length;
+
+            ppsSites.forEach(site => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/50";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-bold text-slate-800 dark:text-slate-200">${escapeHtml(site.name)}</td>
+                    <td class="p-2.5 text-slate-500 dark:text-slate-400 text-xs">${escapeHtml(site.address || 'N/A')}</td>
+                    <td class="p-2.5 text-slate-500 dark:text-slate-400 text-xs">${escapeHtml(site.category || 'General')}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="removeCustomSite('${site.id}')" class="text-slate-400 hover:text-red-500 p-1" title="Delete Site">
+                            <i class="fas fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function processPastedSheetLocations() {
+            const textarea = document.getElementById('import-paste-area');
+            const text = textarea.value.trim();
+
+            if (!text) {
+                showToast("Please paste rows from your Google Sheet first", "error");
+                return;
+            }
+
+            const lines = text.split(/\r?\n/);
+            let importedCount = 0;
+
+            lines.forEach((line, index) => {
+                if (!line.trim()) return;
+                // Parse TSV (tab separated) or CSV (comma separated)
+                let parts = line.includes('\t') ? line.split('\t') : line.split(',');
+                parts = parts.map(p => p.trim().replace(/^["']|["']$/g, ''));
+
+                const name = parts[0];
+                const address = parts[1] || 'Portland, OR';
+                const category = parts[2] || 'Imported Sites';
+
+                if (name && name.toLowerCase() !== 'site name' && name.toLowerCase() !== 'name') {
+                    const slugId = 'custom-' + name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + index;
+                    // Check if already exists
+                    if (!ppsSites.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+                        ppsSites.push({
+                            id: slugId,
+                            name: name,
+                            address: address,
+                            category: category
+                        });
+                        importedCount++;
+                    }
+                }
+            });
+
+            if (importedCount > 0) {
+                saveSitesToStorage();
+                populateSiteDropdowns();
+                renderSitesModalList();
+                textarea.value = '';
+                showToast(`Successfully imported ${importedCount} locations from your sheet!`);
+                playSoftChime();
+            } else {
+                showToast("No new locations found or already existing in database", "error");
+            }
+        }
+
+        function addNewCustomSite() {
+            const nameInput = document.getElementById('new-site-name');
+            const addressInput = document.getElementById('new-site-address');
+            const catInput = document.getElementById('new-site-category');
+
+            const name = nameInput.value.trim();
+            const address = addressInput.value.trim() || 'Portland, OR';
+            const cat = catInput.value.trim() || 'Custom Sites';
+
+            if (!name) {
+                showToast("Please enter a site name", "error");
+                return;
+            }
+
+            const newSite = {
+                id: 'custom-' + Date.now(),
+                name: name,
+                address: address,
+                category: cat
+            };
+
+            ppsSites.push(newSite);
+            saveSitesToStorage();
+            populateSiteDropdowns();
+            renderSitesModalList();
+
+            nameInput.value = '';
+            addressInput.value = '';
+            catInput.value = '';
+            showToast(`Added ${name} to sites database!`);
+            playSoftChime();
+        }
+
+        function removeCustomSite(siteId) {
+            if (ppsSites.length <= 1) {
+                showToast("Database must contain at least one site", "error");
+                return;
+            }
+            ppsSites = ppsSites.filter(s => s.id !== siteId);
+            saveSitesToStorage();
+            populateSiteDropdowns();
+            renderSitesModalList();
+            showToast("Site removed");
+        }
+
+        function resetSitesToDefault() {
+            ppsSites = [...DEFAULT_PPS_SITES];
+            saveSitesToStorage();
+            populateSiteDropdowns();
+            renderSitesModalList();
+            showToast("Restored original PPS master site database");
+        }
+
+        function openBaseSiteModal() {
+            const baseSelect = document.getElementById('base-site-select');
+            if (baseSelect) baseSelect.value = baseSiteId;
+            document.getElementById('base-site-modal').classList.remove('hidden');
+        }
+
+        function closeBaseSiteModal() {
+            document.getElementById('base-site-modal').classList.add('hidden');
+        }
+
+        function saveBaseSite() {
+            const baseSelect = document.getElementById('base-site-select');
+            if (baseSelect) {
+                baseSiteId = baseSelect.value;
+                localStorage.setItem('pps_it_base_site', baseSiteId);
+                updateBaseSiteLabelDisplay();
+                populateSiteDropdowns();
+            }
+            closeBaseSiteModal();
+            showToast("Default starting base updated!");
+            playSoftChime();
+        }
+
+        function updateBaseSiteLabelDisplay() {
+            const baseSite = ppsSites.find(s => s.id === baseSiteId);
+            const label = baseSite ? baseSite.name : 'Central Base';
+            
+            const headerLabelEl = document.getElementById('header-base-label');
+            if (headerLabelEl) {
+                headerLabelEl.innerText = label;
+            }
+
+            const baseDisplayEl = document.getElementById('base-site-display-name');
+            if (baseDisplayEl) {
+                baseDisplayEl.innerText = label;
+            }
+        }
+
+        /* ==========================================================================
+           10. THEME, TOAST & FORMATTING HELPERS
+           ========================================================================== */
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-toggle-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fas fa-moon text-base sm:text-lg text-pps-gold';
+                localStorage.setItem('pps_it_theme', 'light');
+            } else {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fas fa-sun text-base sm:text-lg text-pps-gold';
+                localStorage.setItem('pps_it_theme', 'dark');
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('pps_it_theme');
+            const icon = document.getElementById('theme-toggle-icon');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                if (icon) icon.className = 'fas fa-sun text-base sm:text-lg text-pps-gold';
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (icon) icon.className = 'fas fa-moon text-base sm:text-lg text-pps-gold';
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = message;
+            if (type === "error") {
+                toastIcon.innerHTML = '<i class="fas fa-triangle-exclamation text-red-400"></i>';
+            } else {
+                toastIcon.innerHTML = '<i class="fas fa-circle-check text-pps-gold"></i>';
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3200);
+        }
+
+        function formatDateDisplay(isoDateStr) {
+            if (!isoDateStr) return "";
+            const parts = isoDateStr.split('-');
+            const d = new Date(parts[0], parts[1] - 1, parts[2]);
+            return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatDateIso(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>
